@@ -1,1 +1,6 @@
 from .leccion_viewset import LeccionSerializer, LeccionViewSet
+from .nivelesactividades_viewset import NivelesActividadesSerializer, NivelesActividadesViewSet
+from .trivia_viewset import TriviaSerializer, TriviaViewset
+from .opciones_viewset import OpcionesSerializer, OpcionesViewSet
+from .reconocimientoimagenes_viewset import ReconocimientoImagenesSerializer, ReconocimientoImagenesViewSet
+from .opcionesri_viewset import OpcionesRIViewSet, OpcionesRISerializer
