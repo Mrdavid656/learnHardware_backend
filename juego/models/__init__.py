@@ -4,3 +4,4 @@ from .trivia import Trivia
 from .opciones import Opciones
 from .reconocimiento_imagenes import ReconocimientoImagenes
 from .opciones_ri import OpcionesRI
+from .historial import Historial

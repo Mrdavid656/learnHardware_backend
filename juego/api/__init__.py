@@ -4,3 +4,4 @@ from .trivia_viewset import TriviaSerializer, TriviaViewset
 from .opciones_viewset import OpcionesSerializer, OpcionesViewSet
 from .reconocimientoimagenes_viewset import ReconocimientoImagenesSerializer, ReconocimientoImagenesViewSet
 from .opcionesri_viewset import OpcionesRIViewSet, OpcionesRISerializer
+from .historial_viewset import HistorialSerializer, HistorialViewSet
