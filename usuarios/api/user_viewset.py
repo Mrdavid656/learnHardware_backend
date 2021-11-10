@@ -17,7 +17,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
 
 class UserRegisterSerializer(serializers.Serializer):
-    email = serializers.EmailField()
     password = serializers.CharField(max_length=200)
     username = serializers.CharField(max_length=200)
     first_name = serializers.CharField(max_length=200)
@@ -40,7 +39,7 @@ class UserViewset(viewsets.ModelViewSet):
             user = UserProfile()
             user.first_name = serializer.data['first_name']
             user.last_name = serializer.data['last_name']
-            user.email = serializer.data['email']
+            user.email = serializer.data['email'] if 'email' in serializer.data else ''
             user.username = serializer.data['username']
             user.set_password(serializer.data['password'])
             user.nivel = Nivel.objects.filter(id=serializer.initial_data['nivel_id']).first()

@@ -4,6 +4,7 @@ from recursos.models import RecursoTrivia
 
 
 class RecursoTriviaSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = RecursoTrivia
         fields = '__all__'
