@@ -1,7 +1,4 @@
 from rest_framework import serializers, viewsets
-from rest_framework.decorators import action
-
-from base.utils import CommonResponseUtil
 from juego.api import LeccionSimpleSerializer
 from juego.models import Leccion
 from recursos.models import RecursoLecciones

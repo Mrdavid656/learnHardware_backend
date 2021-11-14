@@ -10,4 +10,4 @@ class Historial(models.Model):
         Trivia, on_delete=models.CASCADE, related_name='Historial_trivia')
     puntos = models.DecimalField(max_digits=4, decimal_places=1)
     like = models.BooleanField(default=False)
-    date = models.DateField(auto_now_add=True)
+    date = models.DateTimeField(auto_now_add=True)

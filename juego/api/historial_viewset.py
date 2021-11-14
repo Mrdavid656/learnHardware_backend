@@ -1,3 +1,4 @@
+from django.db import transaction
 from rest_framework import serializers, viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -5,6 +6,7 @@ from rest_framework.response import Response
 from juego.api.extra_serializer import TriviaSimpleSerializer
 from juego.models import Historial, Trivia
 from usuarios.models import UserProfile, Nivel
+from usuarios.repositories import isUserLevelUp
 
 
 class HistorialSerializer(serializers.ModelSerializer):
@@ -24,17 +26,16 @@ class HistorialViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
-        if (request.data['puntos'] > 0):
-            usuario = UserProfile.objects.filter(id=request.data['usuario']).first()
-            usuario.puntos += request.data['puntos']
-            nivel = Nivel.objects.filter(id=usuario.nivel_id).first()
-            if usuario.puntos >= nivel.limite_puntos:
-                niveles = Nivel.objects.all().order_by('id')
-                usuario.nivel = niveles[int(nivel.nombre)]
-                usuario.puntos = 0
-                usuario.save()
-                return Response({'levelup': niveles[int(nivel.nombre)]}, status=status.HTTP_201_CREATED)
-            usuario.save()
+        arguments = {
+            'puntos': request.data['puntos'],
+            'usuario': request.data['usuario'],
+        }
+        models = {
+            'Nivel': Nivel,
+            'UserProfile': UserProfile
+        }
+        if isUserLevelUp(arguments, models) is True:
+            return Response({'levelup': 'user is levelUp'}, status=status.HTTP_201_CREATED)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
@@ -42,7 +43,7 @@ class HistorialViewSet(viewsets.ModelViewSet):
     def historialByUser(self, request, pk=None):
         if 'usuario' not in request.data:
             return Response('variable usuario is required', status=status.HTTP_400_BAD_REQUEST)
-        queryset = Historial.objects.filter(usuario_id=request.data['usuario']).order_by('trivia')
+        queryset = Historial.objects.filter(usuario_id=request.data['usuario']).order_by('-date')
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = HistorialSerializer(page, many=True)
