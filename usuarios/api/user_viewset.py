@@ -1,6 +1,11 @@
 from rest_framework import serializers, viewsets, status
+from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from base.repository import validatePk
+from base.utils import CommonResponseUtil
+from juego.api import UserLogrosSerializer
+from juego.models import UserLogros
 from usuarios.api import NivelSimpleSerializer
 from usuarios.models import UserProfile, Nivel
 from usuarios.repositories import create_user
@@ -39,3 +44,19 @@ class UserViewset(viewsets.ModelViewSet):
         else:
             return Response(serializer.errors,
                             status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=['get'], url_path="logros", name="Obtener logros de un usuario")
+    def preguntasByLeccion(self, request, pk=None):
+        try:
+            validatePk(pk, UserProfile)
+        except:
+            return CommonResponseUtil.response_not_found()
+        else:
+            queryset = UserLogros.objects.filter(usuario_id=pk)
+            page = self.paginate_queryset(queryset)
+            if page is not None:
+                serializer = UserLogrosSerializer(page, many=True)
+                return self.get_paginated_response(serializer.data)
+            serializer = UserLogrosSerializer(queryset, many=True)
+            return Response(serializer.data)
+
