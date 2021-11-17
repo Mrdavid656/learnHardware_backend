@@ -3,7 +3,8 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from juego.api import LogrosSerializer
-from juego.models import UserLogros, Historial, Logros
+from juego.models import UserLogros, Historial
+from juego.repository.logro_logic import logrosGanados
 
 
 class UserLogrosSerializer(serializers.ModelSerializer):
@@ -14,7 +15,6 @@ class UserLogrosSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-
 class UserLogrosViewSet(viewsets.ModelViewSet):
     queryset = UserLogros.objects.all()
     serializer_class = UserLogrosSerializer
@@ -23,12 +23,5 @@ class UserLogrosViewSet(viewsets.ModelViewSet):
     def wonAward(self, request, pk=None):
         if 'usuario' not in request.data:
             return Response('la variable usuario es requerida', status=status.HTTP_400_BAD_REQUEST)
-        logros = []
         historial = Historial.objects.all().filter(usuario_id=request.data['usuario'])
-        if len(historial) <= 1:
-            logro = Logros.objects.filter(razon=Logros.FIRST_GAME_PLAYED).first()
-            logros.append(logro)
-        serializer = LogrosSerializer(logros, many=True)
-        for logro in serializer.data:
-            UserLogros.objects.create(usuario_id=request.data['usuario'], logro_id=logro['id'])
-        return Response(serializer.data)
+        return Response(logrosGanados(historial, request.data['usuario']))
